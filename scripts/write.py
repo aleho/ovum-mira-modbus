@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+
+"""Writes registers of an Ovum Mira heat pump system over Modbus."""
+
+from __future__ import annotations
+
+import argparse
+import asyncio
+import time
+
+from query import connect, get_component_and_attribute
+
+from ovum_mira_modbus import (
+    DEFAULT_WPM_UNIT_ID,
+)
+
+
+def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        prog="Ovum Mira modbus write script",
+        description=__doc__.splitlines()[0],
+    )
+
+    parser.add_argument("host", help="hostname or IP of the device")
+
+    parser.add_argument(
+        "-u",
+        "--heatpump-unit",
+        type=int,
+        default=DEFAULT_WPM_UNIT_ID,
+        help=(
+            f"Modbus unit address for WPM (heat pump) (default: {DEFAULT_WPM_UNIT_ID})"
+        ),
+    )
+
+    parser.add_argument(
+        "-p",
+        "--port",
+        type=int,
+        default=502,
+        help="TCP port (default: 502)",
+    )
+
+    parser.add_argument(
+        "-l",
+        "--level",
+        type=int,
+        default=1,
+        help="License  level (default: 1)",
+    )
+
+    parser.add_argument(
+        "attribute",
+        help="Component and attribute path, e.g., heating1.mode",
+    )
+
+    parser.add_argument(
+        "value",
+        help="Value",
+    )
+
+    return parser.parse_args(argv)
+
+
+async def _run(args: argparse.Namespace) -> int:
+    (connection, device, counting_wpm, counting_hsm) = await connect(args)
+
+    try:
+        start = time.monotonic()
+
+        (subsystem, attribute, component) = get_component_and_attribute(
+            device, args.attribute
+        )
+
+        if not attribute:
+            print("No attribute specified")
+            return 1
+
+        value = args.value
+        print(f'Writing value "{value}" to subsystem {component}')
+
+        await subsystem.async_write_datapoint(attribute, value)
+        await subsystem.async_update()
+
+        print(f"New value: {getattr(subsystem, attribute)}")
+
+        elapsed = time.monotonic() - start
+
+    finally:
+        await connection.close()
+
+    total_reads = counting_hsm.reads + counting_wpm.reads
+    print(f"\nQueried in {elapsed * 1000:.0f} ms ({total_reads} Modbus reads)")
+
+    return 0
+
+
+def main() -> int:
+    return asyncio.run(_run(_parse_args()))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
