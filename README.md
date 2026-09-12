@@ -1,5 +1,10 @@
 # ovum-mira-modbus
 
+[![CI](https://github.com/aleho/ovum-mira-modbus/actions/workflows/ci.yml/badge.svg)](https://github.com/aleho/ovum-mira-modbus/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/ovum-mira-modbus)](https://pypi.org/project/ovum-mira-modbus/)
+[![Python](https://img.shields.io/pypi/pyversions/ovum-mira-modbus)](https://pypi.org/project/ovum-mira-modbus/)
+[![License](https://img.shields.io/github/license/aleho/ovum-mira-modbus)](LICENSE)
+
 A modern Python device library for communicating with Ovum Mira heat pump systems over Modbus TCP.
 
 This is not an official library and not sponsored by Ovum.
@@ -21,9 +26,6 @@ Ovum Mira heat pump systems expose Modbus communication across multiple Modbus u
     - Thermal power production (kW)
     - Heat pump demand percentage (%)
 
-This library models two units, the HSM and configurable WPM as typed component groups and coordinates atomic polling and
-setpoint writing.
-
 ---
 
 ## Installation
@@ -37,6 +39,10 @@ To include the CLI query tool and actual Modbus backend:
 ```bash
 pip install "ovum-mira-modbus[cli]"
 ```
+
+### Development
+
+Use `bin/install.sh` to get a local development setup.
 
 ---
 
@@ -84,14 +90,35 @@ async def main():
 
 ---
 
-## CLI Query Tool
+## CLI Tools
 
-A command-line script is provided to inspect an Ovum system:
+### `bin/query.sh`
+
+Use this script to print all known components and their values, filtered by license level, or only one specific value:
 
 ```bash
-# Query via Modbus TCP
-bin/query.py IP_OR_HOST
+bin/query.sh IP_OR_HOST [-u HEATPUMP_UNIT] [-p PORT] [-l LICENSE_LEVEL] [--probe] [-a ATTRIBUTE]
 ```
+
+#### Examples
+
+- `bin/query.sh 192.168.1.100 --probe`
+- `bin/query.sh 192.168.1.100`
+- `bin/query.sh 192.168.1.100 --level=2 -a heating1.cooling_room_temperature_target`
+
+
+### `bin/write.sh`
+
+Use this script to write a value to component:
+
+```bash
+bin/write.sh IP_OR_HOST [-u HEATPUMP_UNIT] [-p PORT] [-l LEVEL] component.attribute
+```
+
+#### Examples
+
+- `bin/write.sh 192.168.1.100 heating1.cooling_room_temperature_target 22.5`
+
 
 ---
 
