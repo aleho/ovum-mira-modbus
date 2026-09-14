@@ -26,7 +26,7 @@ from .enum import (
 )
 from .ovum import OvumMira
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 __all__ = [
     "DEFAULT_WPM_UNIT_ID",
