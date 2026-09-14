@@ -145,6 +145,8 @@ async def _run(args: argparse.Namespace) -> int:
     try:
         start = time.monotonic()
 
+        print(f"Access code accepted: {await device.access_granted()}\n")
+
         if args.probe:
             serial_number = await OvumMira.async_probe(counting_hsm)
         elif args.attribute:

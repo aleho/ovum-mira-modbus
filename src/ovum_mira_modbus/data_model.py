@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import struct
 from typing import Any
 
 from modbus_connection.model import (
@@ -14,6 +15,16 @@ from modbus_connection.model import (
 from .enum import (
     OvumLicense,
 )
+
+
+def number_to_words(value: int | float) -> tuple[int, int]:
+    """Convert int or float to two 16-bit big-endian words."""
+    if isinstance(value, int):
+        packed = struct.pack(">i", value)
+    else:
+        packed = struct.pack(">f", value)
+
+    return struct.unpack(">HH", packed)
 
 
 class RoundingIntegerField(NumberField):

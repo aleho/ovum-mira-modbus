@@ -8,7 +8,6 @@ import pytest
 from modbus_connection.mock import MockModbusConnection, MockModbusUnit
 from modbus_connection.pytest_plugin import (
     mock_modbus_connection as mock_modbus_connection,
-    mock_modbus_unit as mock_modbus_unit,
 )
 
 from ovum_mira_modbus import (
@@ -28,6 +27,7 @@ from ovum_mira_modbus import (
     OvumVacationStatus,
 )
 from ovum_mira_modbus.addr import Addr
+from ovum_mira_modbus.data_model import number_to_words
 
 
 def write_string(target: dict[int, int], addr: int, value: str) -> None:
@@ -46,16 +46,6 @@ def write_number(target: dict[int, int], addr: int, value: int | float) -> None:
     w1, w2 = number_to_words(value)
     target[addr] = w1
     target[addr + 1] = w2
-
-
-def number_to_words(value: int | float) -> tuple[int, int]:
-    """Convert int or float to two 16-bit big-endian words."""
-    if isinstance(value, int):
-        packed = struct.pack(">i", value)
-    else:
-        packed = struct.pack(">f", value)
-
-    return struct.unpack(">HH", packed)
 
 
 HSM_REGISTERS: dict[int, int] = {

@@ -7,11 +7,12 @@ from modbus_connection.model import (
     ComponentGroup,
 )
 
+from .addr import Addr
 from .const import (
     DEFAULT_WPM_UNIT_ID,
     HSM_UNIT_ID,
 )
-from .data_model import OvumComponent
+from .data_model import OvumComponent, number_to_words
 from .enum import (
     OvumLicense,
 )
@@ -109,6 +110,7 @@ class OvumMira:
         HotWater,
         BufferStorage,
         HeatPump,
+        Ems,
     ]:
         """All subsystems."""
         return (
@@ -139,3 +141,16 @@ class OvumMira:
         await probe.async_update()
 
         return probe.serial_number
+
+    async def access_granted(self) -> bool:
+        granted = await self._hsm_unit.read_holding_registers(
+            Addr.ACCESS_GRANTED,
+            count=1,
+        )
+
+        return True if len(granted) == 1 and granted[0] == 1 else False
+
+    async def send_access_code(self, code: int) -> None:
+        w1, w2 = number_to_words(code)
+
+        await self._hsm_unit.write_registers(Addr.ACCESS_CODE, [w1, w2])

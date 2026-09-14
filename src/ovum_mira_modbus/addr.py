@@ -14,6 +14,8 @@ class Addr(IntEnum):
     #                                            doc name               type / range             license lvl
 
     VERSION                          = 20      # Softwareversion        str4                     1
+    ACCESS_GRANTED                   = 100     #                        u16                      1
+    ACCESS_CODE                      = 101     #                        s32                /w    1
 
     WW_STATUS                        = 55000   # WW_SWITCH_ON           u16               r/w    1
     WW_TEMP_TARGET                   = 55001   # WW_SOLL                s16    °C  0-62   r/w    1
