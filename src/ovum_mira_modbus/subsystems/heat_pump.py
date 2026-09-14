@@ -15,6 +15,7 @@ class HeatPump(OvumComponent):
 
     name = string(Addr.SYS_NAME, length=10)
     serial_number = string(Addr.SERIAL_NUMBER, length=10)
+    version = string(Addr.VERSION, length=4)
     status = enum(Addr.WPM_STATUS, OvumHeatpumpStatus)
     demand = integer(Addr.WPM_DEMAND, unit="%")
     power_consumption = float32(

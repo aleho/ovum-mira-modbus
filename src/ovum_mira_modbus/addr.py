@@ -5,13 +5,16 @@ from enum import IntEnum
 
 
 class Addr(IntEnum):
-    """Publicly available registers  docs version 1.1.3
+    """Publicly available registers, docs version 1.1.3
 
-    Float values are big endian and resolution 0.1  unless documented
+    Float values are big endian and resolution 0.1, unless documented
     otherwise.
     """
 
     #                                            doc name               type / range             license lvl
+
+    VERSION                          = 20      # Softwareversion        str4                     1
+
     WW_STATUS                        = 55000   # WW_SWITCH_ON           u16               r/w    1
     WW_TEMP_TARGET                   = 55001   # WW_SOLL                s16    °C  0-62   r/w    1
     WW_TEMP_TARGET_PV                = 55002   # WW_SOLL_PV             s16    °C  0-67   r/w    1

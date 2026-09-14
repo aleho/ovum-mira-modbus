@@ -14,3 +14,4 @@ class Hsm(OvumComponent):
     outdoor_temperature = float32(Addr.OUTDOOR_TEMP, unit="°C")
     name = string(Addr.SYS_NAME, length=10)
     serial_number = string(Addr.SERIAL_NUMBER, length=10)
+    version = string(Addr.VERSION, length=4)
