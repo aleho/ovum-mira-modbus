@@ -74,7 +74,8 @@ class OvumEmsStatus(IntEnum):
     """Energy management status."""
 
     NEUTRAL = 0  # Neutral
-    INCREASE = 1  # Erhöhen
+    INCREASE = 1  # Erhöhen, kostenloser PV-Strom
+    DECREASE = 2  # Reduzieren, es wird PV-Strom in kürze erwartet
 
 
 class OvumHotWaterRequestStatus(IntEnum):
