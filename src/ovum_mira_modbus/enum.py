@@ -58,8 +58,8 @@ class OvumHeatingCircuitMode(IntEnum):
 
     OFF = 0  # HK_AUS
     AUTO = 1  # HK_AUTOMATIK
-    WINTER = 2  # HK_WINTER
-    SUMMER = 3  # HK_SOMMER
+    HEATING = 2  # HK_WINTER
+    COOLING = 3  # HK_SOMMER
 
 
 class OvumHeatingCircuitOperationMode(IntEnum):

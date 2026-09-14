@@ -67,7 +67,7 @@ HSM_REGISTERS: dict[int, int] = {
     Addr.EMS_STATUS: int(OvumEmsStatus.INCREASE),
     Addr.EMS_BATTERY: 52,
     Addr.HEAT_CIRC_1_TYPE: OvumHeatingCircuitType.RETURN,
-    Addr.HEAT_CIRC_1_MODE: OvumHeatingCircuitMode.WINTER,
+    Addr.HEAT_CIRC_1_MODE: OvumHeatingCircuitMode.HEATING,
     Addr.HEAT_CIRC_1_OPERATION_MODE: OvumHeatingCircuitOperationMode.COOLING,
     Addr.HEAT_CIRC_1_TARGET_PLUS_PV: 3,
     Addr.HEAT_CIRC_1_TARGET_MINUS_PV: 4,

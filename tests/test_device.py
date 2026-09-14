@@ -35,7 +35,7 @@ async def test_device_update_reads_all(device: OvumMira) -> None:
 
     # Heating Circuit 1
     assert device.heating1.type == OvumHeatingCircuitType.RETURN
-    assert device.heating1.mode == OvumHeatingCircuitMode.WINTER
+    assert device.heating1.mode == OvumHeatingCircuitMode.HEATING
     assert device.heating1.operation_mode == OvumHeatingCircuitOperationMode.COOLING
     assert device.heating1.target_pv_plus == 3
     assert device.heating1.target_pv_minus == 4
