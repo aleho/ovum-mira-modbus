@@ -150,7 +150,7 @@ async def _run(args: argparse.Namespace) -> int:
         if args.probe:
             serial_number = await OvumMira.async_probe(counting_hsm)
         elif args.attribute:
-            await subsystem.async_update()
+            await device.async_poll((component,))
         else:
             await device.async_update()
 

@@ -5,6 +5,9 @@ from __future__ import annotations
 from modbus_connection import ModbusUnit
 from modbus_connection.model import (
     ComponentGroup,
+    Device,
+    UpdateReport,
+    read_optional,
 )
 
 from .addr import Addr
@@ -12,10 +15,8 @@ from .const import (
     DEFAULT_WPM_UNIT_ID,
     HSM_UNIT_ID,
 )
-from .data_model import OvumComponent, number_to_words
-from .enum import (
-    OvumLicense,
-)
+from .data_model import number_to_words
+from .enum import OvumLicense
 from .subsystems import Ems
 from .subsystems.buffer import BufferStorage
 from .subsystems.heat_pump import HeatPump
@@ -25,7 +26,7 @@ from .subsystems.hsm import Hsm
 from .subsystems.probe import Probe
 
 
-class OvumMira:
+class OvumMira(Device):
     """An Ovum Mira heat pump system coordinated over Modbus.
 
     Communicates with the HSM hydraulic unit and the heat pump (Unit 111 by
@@ -45,75 +46,57 @@ class OvumMira:
         elif isinstance(wpm_unit, int):
             wpm_unit = ModbusUnit(wpm_unit)
 
-        self._wpm_unit = wpm_unit
-        self._hsm_unit = hsm_unit if hsm_unit is not None else ModbusUnit(HSM_UNIT_ID)
+        self.modbus_unit_wpm = wpm_unit
 
-        self.hsm = Hsm(self._hsm_unit)
-        self.heating1 = HeatingCircuit(self._hsm_unit, index=1)
-        self.heating2 = HeatingCircuit(self._hsm_unit, index=2)
-        self.heating3 = HeatingCircuit(self._hsm_unit, index=3)
-        self.heating4 = HeatingCircuit(self._hsm_unit, index=4)
-        self.hot_water = HotWater(self._hsm_unit)
-        self.buffer = BufferStorage(self._hsm_unit)
-        self.heat_pump = HeatPump(self._wpm_unit)
-        self.ems = Ems(self._hsm_unit)
+        super().__init__(hsm_unit if hsm_unit is not None else ModbusUnit(HSM_UNIT_ID))
 
-        hsm_components = (
-            self.hsm,
-            self.heating1,
-            self.heating2,
-            self.heating3,
-            self.heating4,
-            self.hot_water,
-            self.buffer,
-            self.ems,
+        self.hsm = Hsm(self.modbus_unit)
+
+        self.heating1 = HeatingCircuit(self.modbus_unit, index=1)
+        self.heating2: HeatingCircuit | None = None
+        self.heating3: HeatingCircuit | None = None
+        self.heating4: HeatingCircuit | None = None
+
+        self.hot_water = HotWater(self.modbus_unit)
+        self.buffer = BufferStorage(self.modbus_unit)
+        self.heat_pump = HeatPump(self.modbus_unit_wpm)
+        self.ems = Ems(self.modbus_unit)
+
+        self._heating_circuits: ComponentGroup | None = None
+
+        self._hsm_group = ComponentGroup(
+            self.modbus_unit,
+            (
+                self.hsm,
+                self.hot_water,
+                self.buffer,
+                self.ems,
+            ),
         )
 
-        wpm_components = (self.heat_pump,)
+    async def _async_setup(self) -> None:
+        self.heating2 = await read_optional(HeatingCircuit(self.modbus_unit, index=2))
+        self.heating3 = await read_optional(HeatingCircuit(self.modbus_unit, index=3))
+        self.heating4 = await read_optional(HeatingCircuit(self.modbus_unit, index=4))
 
-        for component in hsm_components:
-            self.restrict_fields(component)
+        self._heating_circuits = ComponentGroup(
+            self.modbus_unit,
+            (
+                h
+                for h in (
+                    self.heating1,
+                    self.heating2,
+                    self.heating3,
+                    self.heating4,
+                )
+                if h
+            ),
+        )
 
-        for component in wpm_components:
-            self.restrict_fields(component)
+        self._restrict_fields()
 
-        self._hsm_group = ComponentGroup(self._hsm_unit, hsm_components)
-        self._heatpump_group = ComponentGroup(self._wpm_unit, wpm_components)
-
-    def restrict_fields(self, component: OvumComponent) -> None:
-        restricted_fields = component.restricted_fields_for_license(self._license)
-
-        if len(restricted_fields) == 0:
-            return
-
-        component.restrict_fields(component.declared_fields.keys() - restricted_fields)
-
-    @property
-    def hsm_unit(self) -> ModbusUnit:
-        """The Modbus unit for the heating manager."""
-        return self._hsm_unit
-
-    @property
-    def wpm_unit(self) -> ModbusUnit:
-        """The Modbus unit for the heat pump."""
-        return self._wpm_unit
-
-    @property
-    def components(
-        self,
-    ) -> tuple[
-        Hsm,
-        HeatingCircuit,
-        HeatingCircuit,
-        HeatingCircuit,
-        HeatingCircuit,
-        HotWater,
-        BufferStorage,
-        HeatPump,
-        Ems,
-    ]:
-        """All subsystems."""
-        return (
+    def _restrict_fields(self) -> None:
+        for component in (
             self.hsm,
             self.heating1,
             self.heating2,
@@ -123,12 +106,34 @@ class OvumMira:
             self.buffer,
             self.heat_pump,
             self.ems,
-        )
+        ):
+            if component is None:
+                continue
 
-    async def async_update(self, *, notify: bool = True) -> None:
-        """Refresh all subsystem components across both units."""
-        await self._hsm_group.async_update(notify=notify)
-        await self._heatpump_group.async_update(notify=notify)
+            restricted_fields = component.restricted_fields_for_license(self._license)
+
+            if len(restricted_fields) == 0:
+                continue
+
+            component.restrict_fields(
+                component.declared_fields.keys() - restricted_fields
+            )
+
+    async def async_update(self) -> UpdateReport:
+        """Poll all subsystem components."""
+        return await self.async_poll(
+            (
+                "hsm",
+                "heating1",
+                "heating2",
+                "heating3",
+                "heating4",
+                "hot_water",
+                "buffer",
+                "heat_pump",
+                "ems",
+            )
+        )
 
     @classmethod
     async def async_probe(cls, hsm_unit: ModbusUnit) -> str:
@@ -138,7 +143,7 @@ class OvumMira:
         return probe.serial_number
 
     async def access_granted(self) -> bool:
-        granted = await self._hsm_unit.read_holding_registers(
+        granted = await self.modbus_unit.read_holding_registers(
             Addr.ACCESS_GRANTED,
             count=1,
         )
@@ -148,4 +153,4 @@ class OvumMira:
     async def send_access_code(self, code: int) -> None:
         w1, w2 = number_to_words(code)
 
-        await self._hsm_unit.write_registers(Addr.ACCESS_CODE, [w1, w2])
+        await self.modbus_unit.write_registers(Addr.ACCESS_CODE, [w1, w2])
