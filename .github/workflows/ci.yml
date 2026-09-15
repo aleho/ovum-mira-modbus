@@ -35,7 +35,7 @@ jobs:
             "pytest-asyncio>=0.24,<2" \
             "ruff>=0.9" \
             "build>=1,<2" \
-            "modbus-connection[pymodbus]>=4.11.1,<5"
+            "modbus-connection[tmodbus]>=4.11.1,<5"
 
       - name: Check formatting
         run: python -m ruff format --check .

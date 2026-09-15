@@ -57,6 +57,8 @@ from modbus_connection import (
     ModbusTcpParams,
 )
 
+from modbus_connection.tmodbus import TmodbusConnection
+
 from ovum_mira_modbus import (
     OvumMira,
     OvumLicense,
@@ -64,7 +66,7 @@ from ovum_mira_modbus import (
 
 
 async def main():
-    connection = PymodbusConnection(ModbusTcpParams(host="192.168.1.100", port=502))
+    connection = TmodbusConnection(ModbusTcpParams(host="192.168.1.100", port=502))
     await connection.connect()
 
     # specify the license level (default: 1) according to your local device

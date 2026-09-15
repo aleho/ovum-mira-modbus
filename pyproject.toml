@@ -18,7 +18,7 @@ classifiers = [
 dependencies = ["modbus-connection>=4.11.1,<5"]
 
 [project.optional-dependencies]
-cli = ["modbus-connection[pymodbus]>=4.11.1,<5"]
+cli = ["modbus-connection[tmodbus]>=4.11.1,<5"]
 
 [project.urls]
 Repository = "https://github.com/aleho/ovum-mira-modbus"

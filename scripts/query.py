@@ -16,7 +16,7 @@ from modbus_connection import (
     ModbusTcpParams,
 )
 from modbus_connection.cli_helper import CountingUnit, print_component
-from modbus_connection.pymodbus import PymodbusConnection
+from modbus_connection.tmodbus import TmodbusConnection
 
 from ovum_mira_modbus import (
     DEFAULT_WPM_UNIT_ID,
@@ -44,7 +44,7 @@ async def connect(
 ) -> tuple[ModbusConnection, OvumMira, CountingUnit, CountingUnit]:
     """Build the connection described by the arguments. Performs no I/O."""
 
-    connection = PymodbusConnection(ModbusTcpParams(host=args.host, port=args.port))
+    connection = TmodbusConnection(ModbusTcpParams(host=args.host, port=args.port))
 
     await connection.connect()
 
