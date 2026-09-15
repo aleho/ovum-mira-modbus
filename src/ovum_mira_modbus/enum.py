@@ -7,7 +7,6 @@ class OvumLicense(IntEnum):
     """License levels as per docs."""
     BASIC = 1
     PLUS = 2
-    BMS = 3
 
 
 class OvumHeatpumpStatus(IntEnum):

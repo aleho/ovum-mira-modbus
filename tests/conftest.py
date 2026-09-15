@@ -129,7 +129,7 @@ def mock_wpm_unit(mock_modbus_connection: MockModbusConnection) -> MockModbusUni
 def device(mock_wpm_unit: MockModbusUnit, mock_hsm_unit: MockModbusUnit) -> OvumMira:
     """An OvumMira instance backed by seeded mock units."""
     return OvumMira(
-        license=OvumLicense(3),
+        license=OvumLicense(2),
         wpm_unit=mock_wpm_unit,
         hsm_unit=mock_hsm_unit,
     )

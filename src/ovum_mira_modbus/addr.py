@@ -1,5 +1,4 @@
 """Modbus register addresses"""
-# TODO License level 3  "BMS"  registers
 
 from enum import IntEnum
 
