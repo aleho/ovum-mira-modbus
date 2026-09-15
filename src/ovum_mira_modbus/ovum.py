@@ -125,11 +125,6 @@ class OvumMira:
             self.ems,
         )
 
-    @property
-    def outdoor_temperature(self) -> float | None:
-        """Current outdoor temperature from the system controller."""
-        return self.hsm.outdoor_temperature
-
     async def async_update(self, *, notify: bool = True) -> None:
         """Refresh all subsystem components across both units."""
         await self._hsm_group.async_update(notify=notify)

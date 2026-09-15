@@ -30,7 +30,6 @@ async def test_device_update_reads_all(device: OvumMira) -> None:
     await device.async_update()
 
     # System & Outdoor
-    assert device.outdoor_temperature == 12.5
     assert device.hsm.outdoor_temperature == 12.5
 
     # Heating Circuit 1
