@@ -1,5 +1,3 @@
-"""Buffer storage subsystem for Ovum Mira."""
-
 from __future__ import annotations
 
 from modbus_connection.model import enum, integer

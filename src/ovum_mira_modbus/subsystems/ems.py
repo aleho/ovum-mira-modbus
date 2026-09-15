@@ -1,5 +1,3 @@
-"""Energy management system."""
-
 from __future__ import annotations
 
 from modbus_connection.model import enum, int32, integer
@@ -14,6 +12,8 @@ from ..enum import (
 
 
 class Ems(OvumComponent):
+    """Energy management system."""
+
     status = enum(Addr.EMS_STATUS, OvumEmsStatus, writable=True)
     battery = integer(Addr.EMS_BATTERY, unit="%", writable=True)
     grid_power = int32(Addr.EMS_GRID_POWER, unit="W", writable=True)
