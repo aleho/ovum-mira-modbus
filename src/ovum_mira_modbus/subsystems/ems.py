@@ -31,13 +31,13 @@ class Ems(OvumComponent):
         OvumPvReleaseStatus,
     )
 
-    def restricted_fields_for_license(self, license: OvumLicense) -> list[str]:
+    def restricted_fields_for_license(self, license: OvumLicense) -> tuple[str]:
         if license < 2:
-            return [
+            return (
                 "pv_release_status_hot_water",
                 "pv_release_status_heating",
                 "pv_release_status_stage2_hot_water",
                 "pv_release_status_stage2_heating",
-            ]
+            )
 
-        return []
+        return tuple()

@@ -6,7 +6,6 @@ from ..addr import Addr
 from ..data_model import OvumComponent, float32
 from ..enum import (
     OvumHeatpumpStatus,
-    OvumLicense,
 )
 
 
@@ -34,10 +33,11 @@ class HeatPump(OvumComponent):
     condenser_output = float32(Addr.WPM_CONDENSER_OUTPUT, unit="°C")
     ontime = int32(Addr.WPM_COMPRESSOR_ONTIME, unit="min")
 
-    def restricted_fields_for_license(self, license: OvumLicense) -> list[str]:
-        if license < 2:
-            return [
-                # serial_number is documented as restricted but actually available
-            ]
-
-        return []
+    # serial_number is documented as restricted to lvl2 but actually available
+    # def restricted_fields_for_license(self, license: OvumLicense) -> tuple[str]:
+    #    if license < 2:
+    #        return (
+    #            "serial_number",
+    #        )
+    #
+    #    return tuple()

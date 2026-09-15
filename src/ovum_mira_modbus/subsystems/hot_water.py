@@ -42,15 +42,15 @@ class HotWater(OvumComponent):
     circulation_pump_status = boolean(Addr.WW_CIRC_PUMP_STATUS)
     circulation_pump_temperature = float32(Addr.WW_CIRC_PUMP_TEMP, unit="°C")
 
-    def restricted_fields_for_license(self, license: OvumLicense) -> list[str]:
+    def restricted_fields_for_license(self, license: OvumLicense) -> tuple[str]:
         if license < 2:
-            return [
+            return (
                 "request_status",
                 "vacation_status",
                 "fresh_water_temperature_target",
                 "fresh_water_status",
                 "circulation_pump_status",
                 "circulation_pump_temperature",
-            ]
+            )
 
-        return []
+        return tuple()

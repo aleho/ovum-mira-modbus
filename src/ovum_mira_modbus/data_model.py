@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import struct
+from collections.abc import Collection
 from typing import Any
 
 from modbus_connection.model import (
@@ -141,5 +142,5 @@ class OvumComponent(Component):
         """Write an Ovum data point."""
         await self.write(field, value)
 
-    def restricted_fields_for_license(self, license: OvumLicense) -> list[str]:
-        return []
+    def restricted_fields_for_license(self, license: OvumLicense) -> Collection[str]:
+        return tuple()

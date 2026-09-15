@@ -42,9 +42,9 @@ class BufferStorage(OvumComponent):
         OvumCoolBufferLoadingStatus,
     )
 
-    def restricted_fields_for_license(self, license: OvumLicense) -> list[str]:
+    def restricted_fields_for_license(self, license: OvumLicense) -> tuple[str]:
         if license < 2:
-            return [
+            return (
                 "mode",
                 "loading_status",
                 "cooling_available",
@@ -52,6 +52,6 @@ class BufferStorage(OvumComponent):
                 "cooling_temperature_bottom",
                 "cooling_temperature_target",
                 "cooling_loading_status",
-            ]
+            )
 
-        return []
+        return tuple()

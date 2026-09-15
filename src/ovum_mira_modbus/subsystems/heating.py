@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Collection
+
 from modbus_connection.model import enum, integer
 
 from ..addr import Addr
@@ -68,7 +70,7 @@ class HeatingCircuit(OvumComponent):
         Addr.HEAT_CIRC_1_HEAT_LIMIT, stride=25, unit="°C", writable=True
     )
 
-    def restricted_fields_for_license(self, license: OvumLicense) -> list[str]:
+    def restricted_fields_for_license(self, license: OvumLicense) -> Collection[str]:
         if self._index > 2:
             return self.declared_fields.keys()
 
