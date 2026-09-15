@@ -14,6 +14,10 @@ from ..enum import (
 class Ems(OvumComponent):
     """Energy management system."""
 
+    # An override is needed here because reading more than one register above
+    # PV_RELEASE_WW results in exception 0x02.
+    max_gap = 1
+
     status = enum(Addr.EMS_STATUS, OvumEmsStatus, writable=True)
     battery = integer(Addr.EMS_BATTERY, unit="%", writable=True)
     grid_power = int32(Addr.EMS_GRID_POWER, unit="W", writable=True)
