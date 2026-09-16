@@ -17,9 +17,12 @@ from ..enum import (
 class BufferStorage(OvumComponent):
     """Buffer for heating and cooling on HSM."""
 
-    # An override is needed here because reading more than one register above
+    # A definition is needed here because reading more than one register above
     # BUFFER_LOADING_STATUS results in exception 0x02.
-    max_gap = 1
+    register_ranges = (
+        (Addr.BUFFER_TYPE, Addr.BUFFER_LOADING_STATUS),
+        (Addr.COOL_BUFFER_AVAILABLE, Addr.COOL_BUFFER_LOADING_STATUS),
+    )
 
     type = enum(Addr.BUFFER_TYPE, OvumBufferType)
     mode = enum(Addr.BUFFER_MODE, OvumBufferMode)
