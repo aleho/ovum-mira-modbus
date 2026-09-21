@@ -8,46 +8,11 @@ import argparse
 import asyncio
 import time
 
-from query import connect, get_component_and_attribute
-
-from ovum_mira_modbus import (
-    DEFAULT_WPM_UNIT_ID,
-)
+from query import build_args_parser, connect, get_component_and_attribute
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        prog="Ovum Mira modbus write script",
-        description=__doc__.splitlines()[0],
-    )
-
-    parser.add_argument("host", help="hostname or IP of the device")
-
-    parser.add_argument(
-        "-u",
-        "--heatpump-unit",
-        type=int,
-        default=DEFAULT_WPM_UNIT_ID,
-        help=(
-            f"Modbus unit address for WPM (heat pump) (default: {DEFAULT_WPM_UNIT_ID})"
-        ),
-    )
-
-    parser.add_argument(
-        "-p",
-        "--port",
-        type=int,
-        default=502,
-        help="TCP port (default: 502)",
-    )
-
-    parser.add_argument(
-        "-l",
-        "--level",
-        type=int,
-        default=1,
-        help="License  level (default: 1)",
-    )
+    parser = build_args_parser("write")
 
     parser.add_argument(
         "attribute",

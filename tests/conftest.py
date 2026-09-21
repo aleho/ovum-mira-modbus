@@ -49,6 +49,7 @@ def write_number(target: dict[int, int], addr: int, value: int | float) -> None:
 
 
 HSM_REGISTERS: dict[int, int] = {
+    Addr.ACCESS_GRANTED: 1,
     Addr.WW_STATUS: int(OvumHotWaterStatus.ON),
     Addr.WW_TEMP_TARGET: 52,
     Addr.WW_AVAILABLE: int(OvumHotWaterAvailable.YES),

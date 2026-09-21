@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import override
+
 from modbus_connection import ModbusUnit
 from modbus_connection.model import (
     ComponentGroup,
@@ -12,6 +15,7 @@ from modbus_connection.model import (
 
 from .addr import Addr
 from .const import (
+    DEFAULT_ACCESS_CODE,
     DEFAULT_WPM_UNIT_ID,
     HSM_UNIT_ID,
 )
@@ -38,8 +42,10 @@ class OvumMira(Device):
         license: OvumLicense | None,
         wpm_unit: ModbusUnit | int | None,
         hsm_unit: ModbusUnit | None = None,
+        access_code: int = DEFAULT_ACCESS_CODE,
     ) -> None:
         self._license = OvumLicense(1) if license is None else license
+        self._access_code = access_code
 
         if wpm_unit is None:
             wpm_unit = ModbusUnit(DEFAULT_WPM_UNIT_ID)
@@ -135,9 +141,20 @@ class OvumMira(Device):
             )
         )
 
-    @classmethod
-    async def async_probe(cls, hsm_unit: ModbusUnit) -> str:
-        probe = Probe(hsm_unit)
+    @override
+    async def async_poll(
+        self, names: Iterable[str], report: UpdateReport | None = None
+    ) -> UpdateReport:
+        if not await self.access_granted():
+            await self.send_access_code()
+
+        return await super().async_poll(names, report)
+
+    async def async_probe(self) -> str:
+        if not await self.access_granted():
+            await self.send_access_code()
+
+        probe = Probe(self.modbus_unit)
         await probe.async_update()
 
         return probe.serial_number
@@ -150,7 +167,7 @@ class OvumMira(Device):
 
         return True if len(granted) == 1 and granted[0] == 1 else False
 
-    async def send_access_code(self, code: int) -> None:
-        w1, w2 = number_to_words(code)
+    async def send_access_code(self) -> None:
+        w1, w2 = number_to_words(self._access_code)
 
         await self.modbus_unit.write_registers(Addr.ACCESS_CODE, [w1, w2])

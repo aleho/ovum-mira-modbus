@@ -1,6 +1,7 @@
 """Python device library for Ovum Mira heat pumps over Modbus."""
 
 from .const import (
+    DEFAULT_ACCESS_CODE,
     DEFAULT_WPM_UNIT_ID,
     HSM_UNIT_ID,
 )
@@ -29,6 +30,7 @@ from .ovum import OvumMira
 __version__ = "0.0.4"
 
 __all__ = [
+    "DEFAULT_ACCESS_CODE",
     "DEFAULT_WPM_UNIT_ID",
     "HSM_UNIT_ID",
     "OvumMira",

@@ -20,9 +20,10 @@ from ovum_mira_modbus import (
 from ovum_mira_modbus.addr import Addr
 
 
-async def test_probe(mock_hsm_unit: MockModbusUnit) -> None:
+async def test_probe(device: OvumMira) -> None:
     """Test async_probe safely reads outdoor temp and status."""
-    assert await OvumMira.async_probe(mock_hsm_unit) == "mock-serial"
+    assert await device.access_granted()
+    assert await device.async_probe() == "mock-serial"
 
 
 async def test_device_update_reads_all(device: OvumMira) -> None:
@@ -30,6 +31,7 @@ async def test_device_update_reads_all(device: OvumMira) -> None:
     await device.async_update()
 
     # System & Outdoor
+    assert await device.access_granted()
     assert device.hsm.outdoor_temperature == 12.5
 
     # Heating Circuit 1

@@ -19,6 +19,7 @@ from modbus_connection.cli_helper import CountingUnit, print_component
 from modbus_connection.tmodbus import TmodbusConnection
 
 from ovum_mira_modbus import (
+    DEFAULT_ACCESS_CODE,
     DEFAULT_WPM_UNIT_ID,
     HSM_UNIT_ID,
     OvumComponent,
@@ -39,46 +40,9 @@ SECTIONS: dict[str, str] = {
 }
 
 
-async def connect(
-    args: argparse.Namespace,
-) -> tuple[ModbusConnection, OvumMira, CountingUnit, CountingUnit]:
-    """Build the connection described by the arguments. Performs no I/O."""
-
-    connection = TmodbusConnection(ModbusTcpParams(host=args.host, port=args.port))
-
-    await connection.connect()
-
-    counting_wpm = CountingUnit(connection.for_unit(args.heatpump_unit))
-    counting_hsm = CountingUnit(connection.for_unit(HSM_UNIT_ID))
-    licence_level = args.level
-
-    device = OvumMira(
-        license=OvumLicense(licence_level),
-        wpm_unit=counting_wpm,
-        hsm_unit=counting_hsm,
-    )
-
-    return (connection, device, counting_wpm, counting_hsm)
-
-
-def get_component_and_attribute(
-    device: OvumMira, value: str
-) -> tuple[OvumComponent, str | None, str]:
-    parts = value.split(".", 2)
-    component = parts[0]
-    attribute = parts[1] if len(parts) == 2 else None
-    subsystem = getattr(device, component)
-
-    return (
-        subsystem,
-        attribute,
-        component,
-    )
-
-
-def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+def build_args_parser(script: str) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="Ovum Mira modbus query script",
+        prog=f"Ovum Mira Modbus {script} script",
         description=__doc__.splitlines()[0],
     )
 
@@ -107,8 +71,60 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--level",
         type=int,
         default=1,
-        help="License  level (default: 1)",
+        help="License level (default: 1)",
     )
+
+    parser.add_argument(
+        "-c",
+        "--access-code",
+        type=int,
+        default=DEFAULT_ACCESS_CODE,
+        help=f"Access code to use (leave blank for default {DEFAULT_ACCESS_CODE})",
+    )
+
+    return parser
+
+
+async def connect(
+    args: argparse.Namespace,
+) -> tuple[ModbusConnection, OvumMira, CountingUnit, CountingUnit]:
+    """Build the connection described by the arguments. Performs no I/O."""
+
+    connection = TmodbusConnection(ModbusTcpParams(host=args.host, port=args.port))
+
+    await connection.connect()
+
+    counting_wpm = CountingUnit(connection.for_unit(args.heatpump_unit))
+    counting_hsm = CountingUnit(connection.for_unit(HSM_UNIT_ID))
+    licence_level = args.level
+
+    device = OvumMira(
+        license=OvumLicense(licence_level),
+        wpm_unit=counting_wpm,
+        hsm_unit=counting_hsm,
+        access_code=args.access_code,
+    )
+
+    return (connection, device, counting_wpm, counting_hsm)
+
+
+def get_component_and_attribute(
+    device: OvumMira, value: str
+) -> tuple[OvumComponent, str | None, str]:
+    parts = value.split(".", 2)
+    component = parts[0]
+    attribute = parts[1] if len(parts) == 2 else None
+    subsystem = getattr(device, component)
+
+    return (
+        subsystem,
+        attribute,
+        component,
+    )
+
+
+def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = build_args_parser("query")
 
     parser.add_argument(
         "--probe",
@@ -145,14 +161,14 @@ async def _run(args: argparse.Namespace) -> int:
     try:
         start = time.monotonic()
 
-        print(f"Access code accepted: {await device.access_granted()}\n")
-
         if args.probe:
-            serial_number = await OvumMira.async_probe(counting_hsm)
+            serial_number = await device.async_probe()
         elif args.attribute:
             await device.async_poll((component,))
         else:
             await device.async_update()
+
+        print(f"Access code accepted: {await device.access_granted()}\n")
 
         elapsed = time.monotonic() - start
     finally:
