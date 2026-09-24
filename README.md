@@ -60,6 +60,8 @@ from modbus_connection import (
 from modbus_connection.tmodbus import TmodbusConnection
 
 from ovum_mira_modbus import (
+    HSM_UNIT_ID,
+    DEFAULT_WPM_UNIT_ID,
     OvumMira,
     OvumLicense,
 )
@@ -70,7 +72,11 @@ async def main():
     await connection.connect()
 
     # specify the license level (default: 1) according to your local device
-    device = OvumMira(license=OvumLicense(2), wpm_unit=111)
+    device = OvumMira(
+        hsm_unit=connection.for_unit(HSM_UNIT_ID),
+        wpm_unit=connection.for_unit(DEFAULT_WPM_UNIT_ID),
+        license=OvumLicense(2),
+    )
     await device.async_update()
 
     print(f"Outdoor Temperature: {device.hsm.outdoor_temperature} °C")

@@ -99,9 +99,9 @@ async def connect(
     licence_level = args.level
 
     device = OvumMira(
-        license=OvumLicense(licence_level),
-        wpm_unit=counting_wpm,
         hsm_unit=counting_hsm,
+        wpm_unit=counting_wpm,
+        license=OvumLicense(licence_level),
         access_code=args.access_code,
     )
 

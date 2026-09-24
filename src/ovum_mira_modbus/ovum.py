@@ -16,8 +16,6 @@ from modbus_connection.model import (
 from .addr import Addr
 from .const import (
     DEFAULT_ACCESS_CODE,
-    DEFAULT_WPM_UNIT_ID,
-    HSM_UNIT_ID,
 )
 from .data_model import number_to_words
 from .enum import OvumLicense
@@ -39,22 +37,17 @@ class OvumMira(Device):
 
     def __init__(
         self,
+        hsm_unit: ModbusUnit,
+        wpm_unit: ModbusUnit,
         license: OvumLicense | None,
-        wpm_unit: ModbusUnit | int | None,
-        hsm_unit: ModbusUnit | None = None,
         access_code: int = DEFAULT_ACCESS_CODE,
     ) -> None:
         self._license = OvumLicense(1) if license is None else license
         self._access_code = access_code
 
-        if wpm_unit is None:
-            wpm_unit = ModbusUnit(DEFAULT_WPM_UNIT_ID)
-        elif isinstance(wpm_unit, int):
-            wpm_unit = ModbusUnit(wpm_unit)
-
         self.modbus_unit_wpm = wpm_unit
 
-        super().__init__(hsm_unit if hsm_unit is not None else ModbusUnit(HSM_UNIT_ID))
+        super().__init__(hsm_unit)
 
         self.hsm = Hsm(self.modbus_unit)
 
