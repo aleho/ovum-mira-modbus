@@ -37,7 +37,7 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py314"
 src = ["src"]
 extend-exclude = [
     "src/ovum_mira_modbus/addr.py",
