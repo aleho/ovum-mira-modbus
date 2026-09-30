@@ -49,7 +49,7 @@ class Addr(IntEnum):
 
     EMS_STATUS                       = 55070   # HSM_EMS_PVSTATUS       s16               r/w    1
     EMS_BATTERY                      = 55071   # HSM_EMS_BATTERIESOC    s16    %          r/w    1
-    EMS_GRID_POWER                   = 55072   # HSM_EMS_NETZPOWER      s32    W          r/w1   1
+    EMS_GRID_POWER                   = 55072   # HSM_EMS_NETZPOWER      s32    W          r/w    1
     EMS_INVERTER_POWER               = 55074   # HSM_EMS_WRPOWER        s32    W          r/w    1
     EMS_TARGET_POWER                 = 55076   # HSM_EMS_SOLLPOWER      s32    W          r/w    1
 
