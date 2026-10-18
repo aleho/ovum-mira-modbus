@@ -13,7 +13,7 @@ This is not an official library and not sponsored by Ovum.
 
 ## Overview
 
-Ovum Mira heat pump systems expose Modbus communication across multiple Modbus units:
+Ovum Mira heat pump systems expose Modbus communication across multiple Modbus units, for example:
 
 - **System Unit (110, "HSM")**: Heating manager registers:
     - System outdoor temperature
@@ -120,7 +120,7 @@ bin/query.sh IP_OR_HOST [-u HEATPUMP_UNIT] [-p PORT] [-l LICENSE_LEVEL] [--probe
 Use this script to write a value to component:
 
 ```bash
-bin/write.sh IP_OR_HOST [-u HEATPUMP_UNIT] [-p PORT] [-l LEVEL] component.attribute
+bin/write.sh IP_OR_HOST [-u HEATPUMP_UNIT] [-p PORT] [-l LEVEL] component.attribute value
 ```
 
 #### Examples
