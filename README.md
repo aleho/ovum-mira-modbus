@@ -139,6 +139,16 @@ bin/write.sh IP_OR_HOST [-u HEATPUMP_UNIT] [-p PORT] [-l LEVEL] component.attrib
 - `subsystems.BufferStorage`: Buffer setpoint and actual temperature.
 - `subsystems.HeatPump`: Heat pump status enum, power consumption, heat production, and demand.
 
+
+---
+
+## Hardware documentation
+
+This library was built using [the official docs](https://www.ovum.at/produkte/mira/#downloads):
+
+- [260602_MIRA_ModbusDocumentation_V1.1.3_Release.xlsx](docs/ovum/260602_MIRA_ModbusDocumentation_V1.1.3_Release.xlsx)
+- [260630_MIRA_ModBus_Dokumentation_Web-de.pdf](docs/ovum/260630_MIRA_ModBus_Dokumentation_Web-de.pdf)
+
 ---
 
 ## AI
